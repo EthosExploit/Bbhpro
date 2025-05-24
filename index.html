@@ -1,0 +1,1781 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Bounty Hunter Pro Xwc - Advanced Ethical Hacking Course</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== Global Variables & Reset ===== */
+        :root {
+            --primary: #00ff41;
+            --primary-dark: #008f24;
+            --primary-light: #8affb7;
+            --secondary: #ff6600;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --light: #f0f0f0;
+            --accent: #ff0;
+            --danger: #ff3333;
+            --success: #33ff33;
+            --info: #3399ff;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --mobile-breakpoint: 768px;
+            --tablet-breakpoint: 1024px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Oxanium', sans-serif;
+            background-color: var(--dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        /* ===== Typography ===== */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            color: var(--primary-light);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: clamp(1rem, 2vw, 1.1rem);
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* ===== Layout Components ===== */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .section-dark {
+            background-color: var(--darker);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 65, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 20%);
+        }
+
+        .section-light {
+            background-color: var(--dark);
+            background-image: 
+                radial-gradient(circle at 90% 20%, rgba(0, 255, 65, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 10% 80%, rgba(0, 255, 65, 0.03) 0%, transparent 20%);
+        }
+
+        /* ===== Header & Navigation ===== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(5, 10, 5, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 5px var(--primary));
+            animation: pulse 2s infinite alternate;
+        }
+
+        .logo-text {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-bottom: 2rem;
+            color: var(--primary-light);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 255, 65, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .btn-lg {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+        }
+
+        /* ===== Background Effects ===== */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .particle-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+
+        /* ===== Course Features ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(10, 20, 10, 0.7);
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent,
+                transparent,
+                transparent,
+                rgba(0, 255, 65, 0.1)
+            );
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 255, 65, 0.2);
+            border-color: var(--primary);
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+            top: 100%;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* ===== Course Modules ===== */
+        .tabs {
+            margin: 3rem 0;
+        }
+
+        .tab-header {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .tab-header::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-btn.active::after {
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .module-list {
+            list-style-type: none;
+        }
+
+        .module-item {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .module-item::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* ===== Instructor Section ===== */
+        .instructor {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .instructor-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .instructor-badges {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .badge-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* ===== Testimonials ===== */
+        .testimonials-slider {
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .testimonials-track {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .testimonials-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .testimonial {
+            min-width: 100%;
+            scroll-snap-align: start;
+            background: rgba(10, 20, 10, 0.7);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 5rem;
+            color: rgba(0, 255, 65, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .testimonial-name {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .testimonial-role {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0, 255, 65, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-dot.active {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* ===== Pricing ===== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .pricing-card {
+            background: rgba(10, 20, 10, 0.7);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+        }
+
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--primary);
+            color: var(--dark);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--light);
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        .pricing-features {
+            margin-bottom: 2rem;
+            text-align: left;
+            list-style-type: none;
+        }
+
+        .pricing-features li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* ===== FAQ ===== */
+        .accordion {
+            margin: 3rem 0;
+        }
+
+        .accordion-item {
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.5rem;
+            background: rgba(0, 20, 0, 0.5);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(0, 30, 0, 0.7);
+        }
+
+        .accordion-content {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(5, 15, 5, 0.5);
+        }
+
+        .accordion-item.active .accordion-content {
+            padding: 1.5rem;
+            max-height: 1000px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+        }
+
+        /* ===== Contact Form ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 10, 0, 0.5);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 5px;
+            color: var(--light);
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: linear-gradient(to top, rgba(0, 20, 0, 0.95), rgba(0, 10, 0, 0.9));
+            border-top: 1px solid var(--primary);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        .footer-logo-text {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-links h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links ul {
+            list-style-type: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 30, 0, 0.7);
+            color: var(--primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary);
+        }
+
+        .social-link:hover {
+            color: var(--dark);
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 255, 65, 0.1);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== Back to Top ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--primary-light);
+            transform: translateY(-5px);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ===== Mobile Responsive Styles ===== */
+        @media (max-width: 1024px) {
+            .instructor {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .instructor-img {
+                width: 150px;
+                height: 150px;
+            }
+
+            .instructor-badges {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 350px;
+                height: 100vh;
+                background: rgba(5, 15, 5, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2rem;
+                transition: right 0.3s ease;
+                border-left: 1px solid rgba(0, 255, 65, 0.2);
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section {
+                padding: 3rem 0;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .pricing-card {
+                padding: 1.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrix-bg" class="matrix-bg"></canvas>
+
+    <!-- Particle Network Background -->
+    <canvas id="particle-network" class="particle-network"></canvas>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-container">
+                <a href="#" class="logo">
+                    <svg class="logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="#00ff41" d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 464c-114.7 0-208-93.3-208-208S141.3 48 256 48s208 93.3 208 208-93.3 208-208 208z"/>
+                        <path fill="#0a0a0a" d="M256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 208c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z"/>
+                        <circle fill="#00ff41" cx="256" cy="256" r="64"/>
+                    </svg>
+                    <span class="logo-text">BBH Pro</span>
+                </a>
+
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <nav class="nav-menu" id="nav-menu">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#course" class="nav-link">Course</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#instructor" class="nav-link">Instructor</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="#enroll" class="btn btn-primary">Enroll Now</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero section-dark" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Become a Professional Bug Bounty Hunter</h1>
+                <p class="hero-subtitle">Learn advanced ethical hacking techniques and earn money by finding security vulnerabilities in websites and applications.</p>
+                
+                <div class="hero-buttons">
+                    <a href="#enroll" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-secret"></i> Enroll Now
+                    </a>
+                    <a href="#course" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-book-open"></i> View Curriculum
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Features -->
+    <section class="section-light" id="features">
+        <div class="container">
+            <h2>Why Choose Our Course?</h2>
+            <p>Our comprehensive training program is designed to take you from beginner to professional bug bounty hunter with hands-on experience.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="feature-title">Hands-on Labs</h3>
+                    <p>Practice on real-world vulnerable applications with guided exercises and challenges that simulate actual bug bounty scenarios.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h3 class="feature-title">Bug Bounty Focus</h3>
+                    <p>Learn techniques specifically for finding and reporting bugs that pay the most, with strategies used by top hunters.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3 class="feature-title">Tool Mastery</h3>
+                    <p>Master Burp Suite, OWASP ZAP, Nuclei, and other essential hacking tools used by professionals in the field.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">Community Support</h3>
+                    <p>Join our private Discord community for discussions, help, and collaboration with fellow students and instructors.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3 class="feature-title">Certification</h3>
+                    <p>Earn a verifiable certificate upon completion to showcase your skills to employers and bug bounty programs.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Lifetime Updates</h3>
+                    <p>Get free access to all future course updates and new content as the bug bounty landscape evolves.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Modules -->
+    <section class="section-dark" id="course">
+        <div class="container">
+            <h2>Course Curriculum</h2>
+            <p>Our comprehensive curriculum covers everything from basic web security to advanced exploitation techniques used by professional bug bounty hunters.</p>
+            
+            <div class="tabs">
+                <div class="tab-header">
+                    <div class="tab-btn active" data-tab="module1">Module 1</div>
+                    <div class="tab-btn" data-tab="module2">Module 2</div>
+                    <div class="tab-btn" data-tab="module3">Module 3</div>
+                    <div class="tab-btn" data-tab="module4">Module 4</div>
+                    <div class="tab-btn" data-tab="module5">Module 5</div>
+                </div>
+                
+                <div class="tab-content active" id="module1">
+                    <h3>Introduction to Bug Bounty Hunting</h3>
+                    <ul class="module-list">
+                        <li class="module-item">What is Bug Bounty? How does it work?</li>
+                        <li class="module-item">Ethical Hacking vs Bug Bounty vs Penetration Testing</li>
+                        <li class="module-item">Top Bug Bounty Platforms (HackerOne, Bugcrowd, Intigriti)</li>
+                        <li class="module-item">Developing Research Skills for Hunters</li>
+                        <li class="module-item">Essential Linux Commands for Hackers</li>
+                        <li class="module-item">Networking Basics for Security Researchers</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="module2">
+                    <h3>Web Application Security Fundamentals</h3>
+                    <ul class="module-list">
+                        <li class="module-item">HTTP/HTTPS Protocols Deep Dive</li>
+                        <li class="module-item">Cookies, Sessions, and Authentication Mechanisms</li>
+                        <li class="module-item">Web Application Architecture (Frontend, Backend, Database)</li>
+                        <li class="module-item">OWASP Top 10 Vulnerabilities Overview</li>
+                        <li class="module-item">Burp Suite & OWASP ZAP Setup and Configuration</li>
+                        <li class="module-item">Manual Testing Techniques and Methodology</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="module3">
+                    <h3>Advanced Vulnerability Hunting</h3>
+                    <ul class="module-list">
+                        <li class="module-item">SQL Injection (SQLi) - Detection and Exploitation</li>
+                        <li class="module-item">Cross-Site Scripting (XSS) - All Variants</li>
+                        <li class="module-item">Cross-Site Request Forgery (CSRF) Attacks</li>
+                        <li class="module-item">Server-Side Request Forgery (SSRF) Techniques</li>
+                        <li class="module-item">Insecure Direct Object References (IDOR)</li>
+                        <li class="module-item">Remote Code Execution (RCE) Vulnerabilities</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="module4">
+                    <h3>Advanced Tools & Automation</h3>
+                    <ul class="module-list">
+                        <li class="module-item">Burp Suite Professional - All Tools Mastery</li>
+                        <li class="module-item">Nuclei - Templates for Quick Scanning</li>
+                        <li class="module-item">Waybackurls, Gau, FFuf for Reconnaissance</li>
+                        <li class="module-item">Python Scripting for Automation</li>
+                        <li class="module-item">Bash Scripting for Hackers</li>
+                        <li class="module-item">Developing Custom Tools for Specific Targets</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="module5">
+                    <h3>Real-World Bug Hunting</h3>
+                    <ul class="module-list">
+                        <li class="module-item">Case Studies from Facebook, Google, Microsoft</li>
+                        <li class="module-item">Writing Perfect Bug Reports That Get Paid</li>
+                        <li class="module-item">Creating Effective Proof of Concepts (POC)</li>
+                        <li class="module-item">Responsible Disclosure Policies</li>
+                        <li class="module-item">Hall of Fame & Monetary Rewards</li>
+                        <li class="module-item">Avoiding Legal Issues in Bug Hunting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructor Section -->
+    <section class="section-light" id="instructor">
+        <div class="container">
+            <h2>About The Instructor</h2>
+            <p>Learn from an experienced security researcher with proven success in the bug bounty field.</p>
+            
+            <div class="instructor">
+                <img src="https://randomuser.me/api/portraits/men/37.jpg" alt="Instructor" class="instructor-img">
+                <div>
+                    <h3>John Doe <span class="badge badge-primary">Top 1% Hacker</span></h3>
+                    <p class="text-secondary">Senior Security Researcher & Bug Bounty Hunter</p>
+                    
+                    <div class="instructor-badges">
+                        <span class="badge badge-primary">$500k+ Earnings</span>
+                        <span class="badge badge-secondary">10+ Years Experience</span>
+                        <span class="badge badge-primary">1000+ Vulnerabilities</span>
+                    </div>
+                    
+                    <p>With over 10 years of experience in cybersecurity, I've found critical vulnerabilities in companies like Google, Facebook, and Microsoft, earning over $500,000 in bug bounties. Now I'm passionate about sharing my knowledge to help others start their ethical hacking journey.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-dark" id="testimonials">
+        <div class="container">
+            <h2>Student Success Stories</h2>
+            <p>Hear from our students who have transformed their careers through this course.</p>
+            
+            <div class="testimonials-slider">
+                <div class="testimonials-track" id="testimonials-track">
+                    <div class="testimonial">
+                        <div class="testimonial-content">
+                            "This course completely changed my career. Within 3 months of completing it, I found my first critical vulnerability and earned $5,000. The practical labs were especially valuable for real-world application."
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Student" class="testimonial-avatar">
+                            <div>
+                                <div class="testimonial-name">Ahmed Rahman</div>
+                                <div class="testimonial-role">Security Analyst at Tech Solutions Ltd.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial">
+                        <div class="testimonial-content">
+                            "As a complete beginner, I was intimidated by bug bounty hunting. But the instructor's step-by-step approach made complex concepts easy to understand. I now have multiple valid reports on HackerOne thanks to this course!"
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Student" class="testimonial-avatar">
+                            <div>
+                                <div class="testimonial-name">Tasnim Ahmed</div>
+                                <div class="testimonial-role">Freelance Ethical Hacker</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial">
+                        <div class="testimonial-content">
+                            "The automation module alone was worth the price. Learning how to write custom scripts has increased my efficiency 10x. I went from finding nothing to averaging 2-3 valid bugs per week after implementing these techniques."
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Student" class="testimonial-avatar">
+                            <div>
+                                <div class="testimonial-name">Rafiq Islam</div>
+                                <div class="testimonial-role">Penetration Tester at SecureBank</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-controls">
+                    <div class="slider-dot active" data-slide="0"></div>
+                    <div class="slider-dot" data-slide="1"></div>
+                    <div class="slider-dot" data-slide="2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section-light" id="pricing">
+        <div class="container">
+            <h2>Pricing Plans</h2>
+            <p>Choose the plan that fits your learning goals and budget.</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Basic</h3>
+                    <div class="pricing-price">800 BDT <span>/ one-time</span></div>
+                    <ul class="pricing-features">
+                        <li>Full Course Access</li>
+                        <li>50+ Hours of Content</li>
+                        <li>Practical Labs</li>
+                        <li>Community Access</li>
+                        <li>Certificate of Completion</li>
+                    </ul>
+                    <a href="#enroll" class="btn btn-secondary">Enroll Now</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <h3 class="pricing-title">Pro</h3>
+                    <div class="pricing-price">1200 BDT<span>/ one-time</span></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Basic</li>
+                        <li>Bonus Modules</li>
+                        <li>1-on-1 Mentoring Session</li>
+                        <li>Resume & Profile Review</li>
+                        <li>Private Bug Hunting Group</li>
+                        <li>Lifetime Updates</li>
+                    </ul>
+                    <a href="#enroll" class="btn btn-primary">Enroll Now</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Team</h3>
+                    <div class="pricing-price">1700 BDT <span>/ one-time</span></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Pro</li>
+                        <li>Up to 5 Team Members</li>
+                        <li>Team Dashboard</li>
+                        <li>Group Training Session</li>
+                        <li>Priority Support</li>
+                    </ul>
+                    <a href="#enroll" class="btn btn-secondary">Enroll Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-dark" id="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <p>Find answers to common questions about our bug bounty hunting course.</p>
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Do I need prior hacking experience?</span>
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>No! This course is designed for complete beginners but also includes advanced content for those with some experience. We start with the fundamentals and gradually build up to professional-level techniques. The first few modules are specifically designed to bring everyone up to speed with the necessary basics.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>What tools do I need?</span>
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>You'll need a computer (Windows, Mac, or Linux) with at least 4GB RAM. We'll guide you through installing free tools like Burp Suite Community Edition, OWASP ZAP, and others. No expensive software required! For the best experience, we recommend a system with 8GB RAM or more if you plan to run virtual machines for some of the labs.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How much time should I dedicate?</span>
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>We recommend 5-10 hours per week to complete the course in 2-3 months. However, you get lifetime access, so you can learn at your own pace. The more time you spend practicing, the faster you'll see results. Many successful students dedicate 15-20 hours per week and complete the course in about a month while building their bug hunting skills.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Will I really earn money from bug bounties?</span>
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>While we can't guarantee earnings (as results depend on your effort and skill development), many students have earned their first bounty within weeks of completing the course. We teach you exactly what companies pay for and how to find those vulnerabilities. Our top student has earned over $100,000 in bug bounties after completing the course.</p>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Is this course legal?</span>
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Absolutely! We only teach ethical hacking techniques for authorized testing. You'll learn how to participate in legal bug bounty programs and avoid any legal issues. Ethical hacking is a legitimate and growing career field with many opportunities for those with the right skills and ethical approach.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enrollment Section -->
+    <section class="section-light" id="enroll">
+        <div class="container">
+            <h2>Ready to Start Your Bug Bounty Journey?</h2>
+            <p>Enroll today and join our community of ethical hackers finding and fixing vulnerabilities.</p>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="https://www.facebook.com/profile.php?id=61571344304079" class="btn btn-primary btn-lg" style="margin-bottom: 2rem;">
+                    <i class="fas fa-user-secret"></i> Enroll Now
+                </a>
+                <p style="color: var(--text-secondary);">30-day money back guarantee</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section-dark" id="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Have questions? Get in touch with our team for more information.</p>
+            
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p>We're here to help with any questions about our courses, enrollment, or bug bounty hunting in general.</p>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span>hackerxwc@gmail.com</span>
+                    </div>
+                    
+                    
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <span>Dhaka, Bangladesh</span>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=61571344304079" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" id="subject" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea id="message" class="form-control" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">
+                        <svg class="footer-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="#00ff41" d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 464c-114.7 0-208-93.3-208-208S141.3 48 256 48s208 93.3 208 208-93.3 208-208 208z"/>
+                            <path fill="#0a0a0a" d="M256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 208c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z"/>
+                            <circle fill="#00ff41" cx="256" cy="256" r="64"/>
+                        </svg>
+                        <span class="footer-logo-text">BBH Pro</span>
+                    </div>
+                    <p>Advanced Ethical Hacking & Web Security Course in Bangla. Learn to find vulnerabilities and earn money through bug bounty programs.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#course">Course</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#instructor">Instructor</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Free Tools</a></li>
+                        <li><a href="#">Cheat Sheets</a></li>
+                        <li><a href="#">Bug Bounty Tips</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                        <li><a href="#">Ethical Guidelines</a></li>
+                        <li><a href="#">Responsible Disclosure</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2023 Xwc. All rights reserved.<br>Ethical Hacking Education for a Secure Digital Bangladesh</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== Mobile Menu Toggle =====
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navMenu.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+
+        // ===== Sticky Header =====
+        const header = document.getElementById('header');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+                header.style.padding = '0.5rem 0';
+            } else {
+                header.style.boxShadow = 'none';
+                header.style.padding = '1rem 0';
+            }
+        });
+
+        // ===== Matrix Background Effect =====
+        const matrixCanvas = document.getElementById('matrix-bg');
+        const matrixCtx = matrixCanvas.getContext('2d');
+
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const symbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+        const bangla = 'অআইঈউঊঋএঐওঔকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়';
+
+        const alphabet = katakana + latin + nums + symbols + bangla;
+        const fontSize = 16;
+        const columns = matrixCanvas.width / fontSize;
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        const drawMatrix = () => {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            matrixCtx.fillStyle = '#00ff41';
+            matrixCtx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                matrixCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(drawMatrix, 30);
+
+        // ===== Particle Network Background =====
+        const particleCanvas = document.getElementById('particle-network');
+        const particleCtx = particleCanvas.getContext('2d');
+
+        particleCanvas.width = window.innerWidth;
+        particleCanvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = Math.floor(window.innerWidth / 10);
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * particleCanvas.width,
+                y: Math.random() * particleCanvas.height,
+                speedX: Math.random() * 2 - 1,
+                speedY: Math.random() * 2 - 1,
+                size: Math.random() * 2 + 1
+            });
+        }
+
+        const drawParticles = () => {
+            particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            
+            particleCtx.fillStyle = 'rgba(0, 255, 65, 0.5)';
+            
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                
+                particleCtx.beginPath();
+                particleCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                particleCtx.fill();
+                
+                p.x += p.speedX;
+                p.y += p.speedY;
+                
+                if (p.x < 0 || p.x > particleCanvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > particleCanvas.height) p.speedY *= -1;
+                
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        particleCtx.beginPath();
+                        particleCtx.strokeStyle = 'rgba(0, 255, 65, ' + (1 - distance / 150) * 0.2 + ')';
+                        particleCtx.lineWidth = 0.5;
+                        particleCtx.moveTo(p.x, p.y);
+                        particleCtx.lineTo(p2.x, p2.y);
+                        particleCtx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(drawParticles);
+        };
+
+        drawParticles();
+
+        // ===== Tab System =====
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // ===== Accordion =====
+        const accordionItems = document.querySelectorAll('.accordion-item');
+
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            
+            header.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+
+        // ===== Testimonials Slider =====
+        const testimonialsTrack = document.getElementById('testimonials-track');
+        const sliderDots = document.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            testimonialsTrack.scrollTo({
+                left: testimonialsTrack.clientWidth * index,
+                behavior: 'smooth'
+            });
+            
+            sliderDots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        sliderDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+
+        // Auto-advance slides
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % sliderDots.length;
+            goToSlide(currentSlide);
+        }, 5000);
+
+        // ===== Back to Top Button =====
+        const backToTopBtn = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // ===== Form Submission =====
+        const contactForm = document.getElementById('contact-form');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            // Here you would typically send the data to a server
+            console.log({ name, email, subject, message });
+            
+            alert('Message sent successfully! We will contact you soon.');
+            contactForm.reset();
+        });
+
+        // ===== Responsive Adjustments =====
+        function handleResize() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            
+            particleCanvas.width = window.innerWidth;
+            particleCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        // ===== Animation on Scroll =====
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.feature-card, .pricing-card, .testimonial');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+                
+                if (elementPosition < screenPosition) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+
+        // Set initial styles for animation
+        document.querySelectorAll('.feature-card, .pricing-card, .testimonial').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.5s ease';
+        });
+
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+    </script>
+</body>
+</html>
